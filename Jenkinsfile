@@ -3,15 +3,19 @@ pipeline {
   stages {
     stage('SSH') {
       steps {
-        sh '''ssh -o StrictHostKeyChecking=no $SSH_INFO -T << EOF
-cd /var/dev/web/laradock
+        sh '''sshagent (credentials: [\'ssh-logisoft\']) {
+                    sh \'\'\'
+                        ssh -o StrictHostKeyChecking=no $SSH_INFO "
+                        cd /var/dev/web/laradock
 docker-compose restart workspace
-EOF'''
+                        "
+                    \'\'\'
+                }'''
+        }
       }
-    }
 
+    }
+    environment {
+      SSH_INFO = 'logisoft@wms247go.com'
+    }
   }
-  environment {
-    SSH_INFO = 'logisoft@wms247go.com'
-  }
-}
